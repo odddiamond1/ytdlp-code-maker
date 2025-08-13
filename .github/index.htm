@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT-DLP Code Maker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .checkbox-container:hover .checkbox-label {
+            color: #3b82f6;
+        }
+        .checkbox-container:hover .checkbox-box {
+            border-color: #3b82f6;
+        }
+        .checkbox-input:checked ~ .checkbox-box {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .checkbox-input:checked ~ .checkbox-box svg {
+            display: block;
+        }
+        #outputCode {
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 80px;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-blue-600 mb-2">YT-DLP Code Maker</h1>
+            <p class="text-gray-600">Generate custom yt-dlp commands with ease</p>
+        </header>
+
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="mb-6">
+                <label for="youtubeUrl" class="block text-gray-700 font-medium mb-2">YouTube URL</label>
+                <div class="flex">
+                    <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." class="flex-grow px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button id="generateBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg transition duration-200">
+                        Generate Code
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Format Options -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Format Options</h3>
+                    <div class="space-y-2">
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="-f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Best MP4 Quality</span>
+                        </label>
+
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="-f 'bestvideo+bestaudio/best'">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Best Available Quality</span>
+                        </label>
+
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="-f 'bestaudio[ext=m4a]'">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Audio Only (M4A)</span>
+                        </label>
+
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="-f 'bestaudio' --extract-audio --audio-format mp3">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Convert to MP3</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Download Options -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Download Options</h3>
+                    <div class="space-y-2">
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="--embed-thumbnail">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Embed Thumbnail</span>
+                        </label>
+
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="--embed-metadata">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Embed Metadata</span>
+                        </label>
+
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="--embed-chapters">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Embed Chapters</span>
+                        </label>
+
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="--write-subs">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Download Subtitles</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Output Options -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Output Options</h3>
+                    <div class="space-y-2">
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="-o '%(title)s.%(ext)s'">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Use Video Title as Filename</span>
+                        </label>
+
+                        <div class="flex items-center">
+                            <label class="checkbox-container flex items-center cursor-pointer">
+                                <input type="checkbox" id="customPathCheckbox" class="checkbox-input hidden">
+                                <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                    <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </span>
+                                <span class="checkbox-label text-gray-700">Custom Output Path:</span>
+                            </label>
+                            <input type="text" id="customPath" placeholder="C:/Downloads/" class="ml-2 px-2 py-1 border border-gray-300 rounded text-sm flex-grow" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Playlist Options -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Playlist Options</h3>
+                    <div class="space-y-2">
+                        <label class="checkbox-container flex items-center cursor-pointer">
+                            <input type="checkbox" class="checkbox-input hidden" data-arg="--yes-playlist">
+                            <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </span>
+                            <span class="checkbox-label text-gray-700">Download Entire Playlist</span>
+                        </label>
+
+                        <div class="flex items-center">
+                            <label class="checkbox-container flex items-center cursor-pointer">
+                                <input type="checkbox" id="playlistItemsCheckbox" class="checkbox-input hidden">
+                                <span class="checkbox-box w-5 h-5 border border-gray-400 rounded flex items-center justify-center mr-2">
+                                    <svg class="w-3 h-3 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </span>
+                                <span class="checkbox-label text-gray-700">Download specific items:</span>
+                            </label>
+                            <input type="text" id="playlistItems" placeholder="1-5,7,10" class="ml-2 px-2 py-1 border border-gray-300 rounded text-sm w-24" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Generated Command</h2>
+            <div class="relative">
+                <pre id="outputCode" class="bg-gray-800 text-green-400 p-4 rounded-lg overflow-x-auto"></pre>
+                <button id="copyBtn" class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition duration-200">
+                    <i class="fas fa-copy mr-1"></i> Copy
+                </button>
+            </div>
+            <div class="mt-4 text-sm text-gray-600">
+                <p>Run this command in your terminal with yt-dlp installed.</p>
+                <p class="mt-1">Don't have yt-dlp? <a href="https://github.com/yt-dlp/yt-dlp#installation" target="_blank" class="text-blue-600 hover:underline">Install it here</a>.</p>
+            </div>
+        </div>
+
+        <footer class="mt-8 text-center text-gray-600 text-sm">
+            <p>YT-DLP Code Maker - Generate custom yt-dlp commands with ease</p>
+            <p class="mt-1">This tool is not affiliated with yt-dlp or YouTube.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const youtubeUrl = document.getElementById('youtubeUrl');
+            const generateBtn = document.getElementById('generateBtn');
+            const outputCode = document.getElementById('outputCode');
+            const copyBtn = document.getElementById('copyBtn');
+            const customPathCheckbox = document.getElementById('customPathCheckbox');
+            const customPath = document.getElementById('customPath');
+            const playlistItemsCheckbox = document.getElementById('playlistItemsCheckbox');
+            const playlistItems = document.getElementById('playlistItems');
+
+            // Enable/disable custom path input
+            customPathCheckbox.addEventListener('change', function() {
+                customPath.disabled = !this.checked;
+                if (!this.checked) customPath.value = '';
+                generateCommand();
+            });
+
+            // Enable/disable playlist items input
+            playlistItemsCheckbox.addEventListener('change', function() {
+                playlistItems.disabled = !this.checked;
+                if (!this.checked) playlistItems.value = '';
+                generateCommand();
+            });
+
+            // Generate command when any checkbox changes
+            document.querySelectorAll('.checkbox-input').forEach(checkbox => {
+                checkbox.addEventListener('change', generateCommand);
+            });
+
+            // Generate command when inputs change
+            customPath.addEventListener('input', generateCommand);
+            playlistItems.addEventListener('input', generateCommand);
+            generateBtn.addEventListener('click', generateCommand);
+
+            // Copy command to clipboard
+            copyBtn.addEventListener('click', function() {
+                const text = outputCode.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+
+            // Main function to generate the command
+            function generateCommand() {
+                let command = 'yt-dlp';
+                const url = youtubeUrl.value.trim();
+                
+                if (!url) {
+                    outputCode.textContent = 'Please enter a YouTube URL';
+                    return;
+                }
+
+                // Add selected arguments
+                document.querySelectorAll('.checkbox-input:checked').forEach(checkbox => {
+                    if (checkbox.id !== 'customPathCheckbox' && checkbox.id !== 'playlistItemsCheckbox') {
+                        command += ' ' + checkbox.dataset.arg;
+                    }
+                });
+
+                // Add custom path if enabled
+                if (customPathCheckbox.checked && customPath.value.trim()) {
+                    let path = customPath.value.trim();
+                    // Ensure path ends with a slash
+                    if (!path.endsWith('/') && !path.endsWith('\\')) {
+                        path += '/';
+                    }
+                    command += ` -o "${path}%(title)s.%(ext)s"`;
+                }
+
+                // Add playlist items if enabled
+                if (playlistItemsCheckbox.checked && playlistItems.value.trim()) {
+                    command += ` --playlist-items ${playlistItems.value.trim()}`;
+                }
+
+                // Add the URL at the end
+                command += ` "${url}"`;
+
+                outputCode.textContent = command;
+            }
+
+            // Generate command on Enter key press in URL field
+            youtubeUrl.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    generateCommand();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
